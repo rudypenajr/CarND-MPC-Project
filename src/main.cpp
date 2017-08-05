@@ -137,11 +137,7 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          std::cout << "===========================" << endl;
-          std::cout << "Calling mpc.Solve() -- main.cpp" << endl;
           vector<double> vars = mpc.Solve(state, coeffs);
-          std::cout << "variable vars has been set --- main.cpp" << endl;
-          std::cout << "===========================" << endl;
 
           //Display the waypoints/reference line - Yellow Line
           vector<double> next_x_vals;
@@ -173,8 +169,8 @@ int main() {
           }
 
           // double Lf = 2.67;
-          double steer_value = j[1]["steering_angle"];
-          double throttle_value = j[1]["throttle"];
+          double steer_value = vars[0];
+          double throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
