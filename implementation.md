@@ -16,9 +16,9 @@ Our model combines the state and actuations from the previous timestep to calcul
 ![Model Equations](equations.jpg)
 
 ### Timestep Length and Elapsed Duration (N & dt)
-The values chosen for `N` and `dt` were 10 and 0.1. These were initially provided from the [Udacity Youtube Video](https://www.youtube.com/watch?v=bOQuhpz3YfU) for this project. The values are essentially considering a one second duraction in which to determine a correct trajectory.
+The values chosen for `N` and `dt` were 10 and 0.1. These were initially provided from the [Udacity Youtube Video](https://www.youtube.com/watch?v=bOQuhpz3YfU) for this project. The values are essentially considering a one second duration in which to determine a correct trajectory.
 
-In my code, in `MPC.cpp`, I tried a few other values but both gave very erratic behavior. For instance, I used the initial values provided on the MPC Quiz and the vehicle about a second in, went off the road. So I stuck with the values provided since the instructors simulation ran fairly well.
+In my code, in `MPC.cpp`, I tried a few other values but both gave very erratic behavior. For instance, I used the initial values provided on the MPC Quiz and the vehicle, about a second in, went off the road. So I stuck with the values provided since the instructors simulation ran fairly well.
 
 ### Polynomial Fitting and MPC Processing
 This was also helpful and provided in the [Udacity Youtube Video](https://www.youtube.com/watch?v=bOQuhpz3YfU). The code addressing this can be found in `main.cpp` in lines 107 - 129. The waypoints are being preprocessed by transforming them to the vehicle's perspective. This, actually simplifies the process to fit a polynomial to the waypoints. The reason being that now the origin is set to `0, 0` as well as the orientation angle (set to 0).
