@@ -91,20 +91,21 @@ int main() {
           double py = j[1]["y"]; // y position of car
           double psi = j[1]["psi"]; // psi of car
           double v = j[1]["speed"]; // speed of car
-          double steer = j[1]["steering_angle"];
-          double acc = j[1]["throttle"];
+          double delta = j[1]["steering_angle"];
+          double acceleration = j[1]["throttle"];
           double Lf = 2.67;
           double latency = 0.1;
 
+          // Inspiration: https://discussions.udacity.com/t/how-to-incorporate-latency-into-the-model/257391/4
           px = px + v * cos(psi) * latency;
           py = py + v * sin(psi) * latency;
-          psi -= v * steer / Lf * latency;
-          v += acc * latency;
+          // Inspiration: https://discussions.udacity.com/t/here-is-some-advice-about-steering-values/276487/4?u=pierluigi.ferrari
+          psi -= v * delta / Lf * latency;
+          v += acceleration * latency;
 
           // Substract all the pts from our current position
           for (int i = 0; i <  ptsx.size(); i++) {
             // shift car reference angle to 90 degrees
-            std::cout << "Shift Car Reference Angle" << std::endl;
             // ptsx = points @ x
             // ptsy = points @ y
             double shift_x = ptsx[i] - px; // x coordinate be at 0
