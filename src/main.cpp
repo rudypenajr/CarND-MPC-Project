@@ -91,6 +91,15 @@ int main() {
           double py = j[1]["y"]; // y position of car
           double psi = j[1]["psi"]; // psi of car
           double v = j[1]["speed"]; // speed of car
+          double steer = j[1]["steering_angle"];
+          double acc = j[1]["throttle"];
+          double Lf = 2.67;
+          double latency = 0.1;
+
+          px = px + v * cos(psi) * latency;
+          py = py + v * sin(psi) * latency;
+          psi -= v * steer / Lf * latency;
+          v += acc * latency;
 
           // Substract all the pts from our current position
           for (int i = 0; i <  ptsx.size(); i++) {
@@ -126,7 +135,7 @@ int main() {
           // double epsi = psi - atan(coeffs[1] + 2 * px * coeffs[2] + 3 * coeffs[3] * pow(px, 2))
           double epsi = -atan(coeffs[1]);
 
-          std::cout << "cte: " << cte << "epsi: " << epsi << endl;
+          std::cout << "cte: " << cte << ", epsi: " << epsi << endl;
 
           Eigen::VectorXd state = Eigen::VectorXd::Zero(6);
           state << 0, 0, 0, v, cte, epsi;
@@ -147,10 +156,10 @@ int main() {
           // the points in the simulator are connected by a Yellow line
 
           double poly_inc = 2.5; // set amt of distance in the x direction
-          int num_points = 25; // 25 pts out in the future
-          for (int i = 1; i < num_points; i++) {
+          int num_points = 100; // 25 pts out in the future
+          for (int i = 1; i < num_points; i += poly_inc) {
             next_x_vals.push_back(poly_inc * i);
-            next_y_vals.push_back( polyeval(coeffs, poly_inc*i) );
+            next_y_vals.push_back( polyeval(coeffs, i) );
           }
 
           //Display the MPC predicted trajectory - Green Line
@@ -168,17 +177,15 @@ int main() {
             }
           }
 
-          // double Lf = 2.67;
           double steer_value = vars[0];
           double throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value / (deg2rad(25));
+          // msgJson["steering_angle"] = -(steer_value / deg2rad(25) / Lf);
+          msgJson["steering_angle"] = -(steer_value / (deg2rad(25) * Lf));
           msgJson["throttle"] = throttle_value;
-          // msgJson["steering_angle"] = vars[0] / (deg2rad(25) * Lf);
-          // msgJson["throttle"] = vars[1];
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
