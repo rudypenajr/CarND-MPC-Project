@@ -9,8 +9,8 @@ using CppAD::AD;
 // N = 10, dt = .1 --> Worked Fantastic!
 // N = 20, dt = .1 --> A bit off, big turns confuse it
 // N = 25, dt = .05 --> Barely left the station
-size_t N = 25;
-double dt = .05;
+size_t N = 10;
+double dt = .1;
 
 // This value assumes the model presented in the classroom is used.
 //
