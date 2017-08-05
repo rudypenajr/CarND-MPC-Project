@@ -93,11 +93,13 @@ int main() {
           double v = j[1]["speed"]; // speed of car
 
           // Substract all the pts from our current position
-          for (int i = 0; i <  pstx.size(); i++) {
+          for (int i = 0; i <  ptsx.size(); i++) {
             // shift car reference angle to 90 degrees
             std::cout << "Shift Car Reference Angle" << std::endl;
-            double shift_x = pstx[i].px - px; // x coordinate be at 0
-            double shift_y = psty[i].py - py; // y coordinate be at 0
+            // ptsx = points @ x
+            // ptsy = points @ y
+            double shift_x = ptsx[i] - px; // x coordinate be at 0
+            double shift_y = ptsy[i] - py; // y coordinate be at 0
 
             // Make psi 0 by doing rotation about the origin
             // 1. Helps w/ polynomial fit because then most of the time the car is
@@ -105,8 +107,8 @@ int main() {
             // that we are looking at that is nice when doing a polynomial fit.
             // 2. Helps with the mathematics of doing the MPC evaluation.
             // 3. Helps us try to look at CTE and just doing transitions in general.
-            pstx[i] = (shift_x * cos(0 - psi) - shift_y * sin(0 - psi);
-            psty[i] = (shift_x * sin(0 - psi) + shift_y * cos(0 - psi);
+            ptsx[i] = (shift_x * cos(0 - psi) - shift_y * sin(0 - psi));
+            ptsy[i] = (shift_x * sin(0 - psi) + shift_y * cos(0 - psi));
           }
 
           // Conversion: Transform Vector Double to Eigen VectorXD in order to pass to polyfit function
@@ -126,10 +128,7 @@ int main() {
 
           std::cout << "cte: " << cte << "epsi: " << epsi << endl;
 
-          double steer_value = j[1]["steering_angle"];
-          double throttle_value = j[1]["throttle"];
-
-          Eigen::VectorXd state(6);
+          Eigen::VectorXd state = Eigen::VectorXd::Zero(6);
           state << 0, 0, 0, v, cte, epsi;
 
           /*
@@ -138,8 +137,11 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          auto vars = mpc.Solve(state, coeffs);
-          std::cout << 'vars: ' << vars << endl;
+          std::cout << "===========================" << endl;
+          std::cout << "Calling mpc.Solve() -- main.cpp" << endl;
+          vector<double> vars = mpc.Solve(state, coeffs);
+          std::cout << "variable vars has been set --- main.cpp" << endl;
+          std::cout << "===========================" << endl;
 
           //Display the waypoints/reference line - Yellow Line
           vector<double> next_x_vals;
@@ -170,15 +172,17 @@ int main() {
             }
           }
 
-          double Lf = 2.67;
+          // double Lf = 2.67;
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          // msgJson["steering_angle"] = vars[0] / (deg2rad(25) * Lf);
-          // msgJson["throttle"] = vars[1];
           msgJson["steering_angle"] = steer_value / (deg2rad(25));
           msgJson["throttle"] = throttle_value;
+          // msgJson["steering_angle"] = vars[0] / (deg2rad(25) * Lf);
+          // msgJson["throttle"] = vars[1];
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
